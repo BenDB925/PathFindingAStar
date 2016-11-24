@@ -1,12 +1,14 @@
 #include "Game.h"
 #include <iostream>
 #include <thread>
+#include "TextureLoader.h"
 
 
 using namespace std;
 
 Game::Game() : m_running(false)
 {
+	_frameCounter = FramerateCounter();
 }
 
 Game::~Game()
@@ -27,7 +29,7 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 			if(m_p_Renderer != 0)
 			{
 				DEBUG_MSG("Renderer creation success");
-				SDL_SetRenderDrawColor(m_p_Renderer, 255, 255, 255, 255);
+				SDL_SetRenderDrawColor(m_p_Renderer, 0, 0, 0, 255);
 			}
 			else
 			{
@@ -56,43 +58,69 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 void Game::LoadContent()
 {
 	DEBUG_MSG("Loading Content");
-	m_p_Surface = IMG_Load("assets/sprite.png");
-	m_p_Texture = SDL_CreateTextureFromSurface(m_p_Renderer, m_p_Surface);
-	SDL_FreeSurface(m_p_Surface);
 
-	if(SDL_QueryTexture(m_p_Texture, NULL, NULL, &m_Source.w, &m_Destination.h)==0)
-	{
-		m_Destination.x = m_Source.x = 0;
-		m_Destination.y = m_Source.y = 0;
-		m_Destination.w = m_Source.w;
-		m_Destination.h = m_Source.h;
 
-		//DEBUG_MSG("Destination X:" + m_Destination.x);
-		/*DEBUG_MSG("Destination Y:" + m_Destination.y);
-		DEBUG_MSG("Destination W:" + m_Destination.w);
-		DEBUG_MSG("Destination H:" + m_Destination.h);*/
-	}
-	else
+	SDL_Texture* groundTexture = TextureLoader::loadTexture("assets/ground.jpg", m_p_Renderer);
+
+	int tileSize = 64;
+
+	for (int i = 0; i < _WORLD_WIDTH; i++)
 	{
-		DEBUG_MSG("Texture Query Failed");
-		m_running = false;
+		_tiles.push_back(std::vector<Tile>());
+
+		for (int j = 0; j < _WORLD_WIDTH; j++)
+		{
+			_tiles[i].push_back(Tile(i * tileSize * 1.05, j * tileSize * 1.05, tileSize, tileSize, groundTexture));
+		}
 	}
+
+	//m_p_Surface = IMG_Load("assets/sprite.png");
+	//m_p_Texture = SDL_CreateTextureFromSurface(m_p_Renderer, m_p_Surface);
+	//SDL_FreeSurface(m_p_Surface);
+
+	//if(SDL_QueryTexture(m_p_Texture, NULL, NULL, &m_Source.w, &m_Destination.h)==0)
+	//{
+	//	m_Destination.x = m_Source.x = 0;
+	//	m_Destination.y = m_Source.y = 0;
+	//	m_Destination.w = m_Source.w;
+	//	m_Destination.h = m_Source.h;
+
+	//	//DEBUG_MSG("Destination X:" + m_Destination.x);
+	//	/*DEBUG_MSG("Destination Y:" + m_Destination.y);
+	//	DEBUG_MSG("Destination W:" + m_Destination.w);
+	//	DEBUG_MSG("Destination H:" + m_Destination.h);*/
+	//}
+	//else
+	//{
+	//	DEBUG_MSG("Texture Query Failed");
+	//	m_running = false;
+	//}
 }
 
 void Game::Render()
 {
 	SDL_RenderClear(m_p_Renderer);
-	DEBUG_MSG("Width Source" + m_Destination.w);
+	/*DEBUG_MSG("Width Source" + m_Destination.w);
 	DEBUG_MSG("Width Destination" + m_Destination.w);
 
 	if(m_p_Renderer != nullptr && m_p_Texture != nullptr)
-		SDL_RenderCopy(m_p_Renderer, m_p_Texture, NULL, NULL);
+		SDL_RenderCopy(m_p_Renderer, m_p_Texture, NULL, NULL);*/
+
+	for(int i = 0; i < _WORLD_WIDTH; i++)
+	{
+		for(int j = 0; j < _WORLD_WIDTH; j++)
+		{
+			_tiles[i][j].render(m_p_Renderer);
+		}
+	}
+
 	SDL_RenderPresent(m_p_Renderer);
 }
 
 void Game::Update()
 {
 	//DEBUG_MSG("Updating....");
+	_frameCounter.update(m_p_Renderer);
 }
 
 void Game::HandleEvents()
@@ -108,7 +136,7 @@ void Game::HandleEvents()
 				case SDLK_ESCAPE:
 					m_running = false;
 					break;
-				case SDLK_UP:
+				/*case SDLK_UP:
 					DEBUG_MSG("Up Key Pressed");
 					SDL_SetRenderDrawColor(m_p_Renderer, 255, 0, 0, 255);
 					break;
@@ -123,9 +151,8 @@ void Game::HandleEvents()
 				case SDLK_RIGHT:
 					DEBUG_MSG("Right Key Pressed");
 					SDL_SetRenderDrawColor(m_p_Renderer, 255, 255, 255, 255);
-					break;
+					break;*/
 				default:
-					SDL_SetRenderDrawColor(m_p_Renderer, 0, 0, 0, 255);
 					break;
 				}
 	}

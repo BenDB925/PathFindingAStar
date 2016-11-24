@@ -10,31 +10,31 @@ using namespace std;
 class Process
 {
 public:
-	Process(){}
+	Process() {}
 	Process(const Game& game) : m_Game(game)
 	{
 
 	}
-	~Process(){};
+	~Process() {};
 	void run()
 	{
-		while(m_Game.IsRunning())
+		while (m_Game.IsRunning())
 		{
-			DEBUG_MSG("Thread Running");
+			//DEBUG_MSG("Thread Running");
 		}
 	}
 private:
 	Game m_Game;
 };
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
 
 	DEBUG_MSG("Game Object Created");
 
 	Game* game = new Game();
 
 	//Adjust screen positions as needed
-	game->Initialize("DGPP Skelatol",300,100,800,600, SDL_WINDOW_INPUT_FOCUS);
+	game->Initialize("A Star", 300, 100, 800, 600, SDL_WINDOW_INPUT_FOCUS);
 	DEBUG_MSG("Game Initialised");
 
 	game->LoadContent();
@@ -43,7 +43,7 @@ int main(int argc, char** argv){
 	t1.detach(); //detaches from SDL mainline
 
 	DEBUG_MSG("Game Loop Starting......");
-	while(game->IsRunning())
+	while (game->IsRunning())
 	{
 		game->HandleEvents();
 		game->Update();
@@ -53,7 +53,7 @@ int main(int argc, char** argv){
 	DEBUG_MSG("Calling Cleanup");
 	game->CleanUp();
 	game->UnloadContent();
-	
+
 	return 0;
 }
 
