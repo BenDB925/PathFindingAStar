@@ -2,11 +2,12 @@
 #include <iostream>
 #include <thread>
 #include "TextureLoader.h"
+#include "LevelGenerator.h"
 
 
 using namespace std;
 
-const float Game::_camSpeed = 10;
+const float Game::_camSpeed = 250;
 
 Game::Game() : m_running(false)
 {
@@ -64,41 +65,27 @@ void Game::LoadContent()
 {
 	DEBUG_MSG("Loading Content");
 
-
-	SDL_Texture* groundTexture = TextureLoader::loadTexture("assets/ground.jpg", m_p_Renderer);
-
-
 	for (int i = 0; i < _WORLD_WIDTH; i++)
 	{
 		_tiles.push_back(std::vector<Tile>());
 
 		for (int j = 0; j < _WORLD_WIDTH; j++)
 		{
-			_tiles[i].push_back(Tile(i * _TILE_SIZE, j * _TILE_SIZE, _TILE_SIZE, _TILE_SIZE, groundTexture));
+			_tiles[i].push_back(Tile(i * _TILE_SIZE, j * _TILE_SIZE, _TILE_SIZE, _TILE_SIZE, true));
 		}
 	}
 
-	//m_p_Surface = IMG_Load("assets/sprite.png");
-	//m_p_Texture = SDL_CreateTextureFromSurface(m_p_Renderer, m_p_Surface);
-	//SDL_FreeSurface(m_p_Surface);
+	LevelGenerator::GenerateMillion(&_tiles);
 
-	//if(SDL_QueryTexture(m_p_Texture, NULL, NULL, &m_Source.w, &m_Destination.h)==0)
-	//{
-	//	m_Destination.x = m_Source.x = 0;
-	//	m_Destination.y = m_Source.y = 0;
-	//	m_Destination.w = m_Source.w;
-	//	m_Destination.h = m_Source.h;
-
-	//	//DEBUG_MSG("Destination X:" + m_Destination.x);
-	//	/*DEBUG_MSG("Destination Y:" + m_Destination.y);
-	//	DEBUG_MSG("Destination W:" + m_Destination.w);
-	//	DEBUG_MSG("Destination H:" + m_Destination.h);*/
-	//}
-	//else
-	//{
-	//	DEBUG_MSG("Texture Query Failed");
-	//	m_running = false;
-	//}
+	SDL_Texture* groundTexture = TextureLoader::loadTexture("assets/ground.jpg", m_p_Renderer);
+	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.jpg", m_p_Renderer);
+	for(int i = 0; i < _tiles.size(); i++)
+	{
+		for(int j = 0; j < _tiles.at(i).size(); j ++)
+		{
+			_tiles.at(i).at(j).initTexture(groundTexture, wallTexture);
+		}
+	}
 }
 
 void Game::Render()
@@ -119,9 +106,9 @@ void Game::Render()
 	if (topTileIndex > _WORLD_WIDTH - _cam._tilesPerScreen - 1)
 		topTileIndex = _WORLD_WIDTH - _cam._tilesPerScreen - 1;
 
-	for(int i = leftTileIndex; i < leftTileIndex + _cam._tilesPerScreen; i++)
+	for (int i = leftTileIndex; i < leftTileIndex + _cam._tilesPerScreen; i++)
 	{
-		for(int j = topTileIndex; j < topTileIndex + _cam._tilesPerScreen; j++)
+		for (int j = topTileIndex; j < topTileIndex + _cam._tilesPerScreen; j++)
 		{
 			_tiles[i][j].render(m_p_Renderer);
 		}

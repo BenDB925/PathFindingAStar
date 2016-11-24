@@ -85,6 +85,7 @@
     <ClInclude Include="FramerateCounter.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="LevelGenerator.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Timer.h" />

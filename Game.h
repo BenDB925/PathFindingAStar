@@ -21,6 +21,9 @@ public:
 	void HandleEvents();
 	bool IsRunning();
 	void CleanUp();
+
+	static const int _WORLD_WIDTH = 1000;
+	static const int _TILE_SIZE = 64;
 private:
 	bool m_running;
 	SDL_Window* m_p_Window;
@@ -30,8 +33,6 @@ private:
 	SDL_Rect m_Destination;
 	SDL_Surface* m_p_Surface;
 
-	static const int _WORLD_WIDTH = 1000;
-	static const int _TILE_SIZE = 64;
 
 	static const float _camSpeed;
 

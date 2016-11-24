@@ -4,10 +4,12 @@
 class Tile
 {
 public:
-	Tile(int pX, int pY, int pWidth, int pHeight, SDL_Texture* ptexture);
+	Tile(int pX, int pY, int pWidth, int pHeight, bool pIsPassable);
 	~Tile();
-
+	void initTexture(SDL_Texture * groundTexture, SDL_Texture * wallTexture);
 	void render(SDL_Renderer * pRenderer);
+
+	bool _isPassable;
 
 private:
 	SDL_Texture* _texture;

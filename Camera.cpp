@@ -14,6 +14,7 @@ Camera::Camera(int pTileSize, float pX, float pY, int pScreenWidth)
 
 Camera::~Camera()
 {
+
 }
 
 int Camera::findLeftTileIndex() const
