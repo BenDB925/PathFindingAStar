@@ -6,6 +6,7 @@
 #include "Tile.h"
 #include <vector>
 #include "FramerateCounter.h"
+#include "Camera.h"
 
 class Game
 {
@@ -30,8 +31,12 @@ private:
 	SDL_Surface* m_p_Surface;
 
 	static const int _WORLD_WIDTH = 1000;
+	static const int _TILE_SIZE = 64;
+
+	static const float _camSpeed;
 
 	std::vector<std::vector<Tile>> _tiles;
 	FramerateCounter _frameCounter;
+	Camera _cam;
 };
 #endif

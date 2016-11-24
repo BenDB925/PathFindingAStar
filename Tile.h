@@ -12,5 +12,6 @@ public:
 private:
 	SDL_Texture* _texture;
 	SDL_Rect _rect;
+	SDL_Point _worldPos;
 };
 

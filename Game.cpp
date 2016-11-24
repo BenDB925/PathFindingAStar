@@ -6,6 +6,8 @@
 
 using namespace std;
 
+const float Game::_camSpeed = 0.1f;
+
 Game::Game() : m_running(false)
 {
 	_frameCounter = FramerateCounter();
@@ -48,7 +50,14 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 		DEBUG_MSG("SDL init fail");
 		return false;
 	}
+
 	m_running = true;
+
+	SDL_Point camPos;
+	camPos.x = 0;
+	camPos.y = 0;
+
+	_cam = Camera(_TILE_SIZE, camPos, width);
 
 	return true;
 }
@@ -62,7 +71,6 @@ void Game::LoadContent()
 
 	SDL_Texture* groundTexture = TextureLoader::loadTexture("assets/ground.jpg", m_p_Renderer);
 
-	int tileSize = 64;
 
 	for (int i = 0; i < _WORLD_WIDTH; i++)
 	{
@@ -70,7 +78,7 @@ void Game::LoadContent()
 
 		for (int j = 0; j < _WORLD_WIDTH; j++)
 		{
-			_tiles[i].push_back(Tile(i * tileSize * 1.05, j * tileSize * 1.05, tileSize, tileSize, groundTexture));
+			_tiles[i].push_back(Tile(i * _TILE_SIZE * 1.05, j * _TILE_SIZE * 1.05, _TILE_SIZE, _TILE_SIZE, groundTexture));
 		}
 	}
 
@@ -100,19 +108,20 @@ void Game::LoadContent()
 void Game::Render()
 {
 	SDL_RenderClear(m_p_Renderer);
-	/*DEBUG_MSG("Width Source" + m_Destination.w);
-	DEBUG_MSG("Width Destination" + m_Destination.w);
 
-	if(m_p_Renderer != nullptr && m_p_Texture != nullptr)
-		SDL_RenderCopy(m_p_Renderer, m_p_Texture, NULL, NULL);*/
 
-	for(int i = 0; i < _WORLD_WIDTH; i++)
+
+	int leftTileIndex = _cam.findLeftTileIndex();
+	int topTileIndex = _cam.findTopTileIndex();
+
+	for(int i = leftTileIndex; i < leftTileIndex + _cam._tilesPerScreen; i++)
 	{
-		for(int j = 0; j < _WORLD_WIDTH; j++)
+		for(int j = topTileIndex; j < topTileIndex + _cam._tilesPerScreen; j++)
 		{
 			_tiles[i][j].render(m_p_Renderer);
 		}
 	}
+
 
 	SDL_RenderPresent(m_p_Renderer);
 }
@@ -136,13 +145,13 @@ void Game::HandleEvents()
 				case SDLK_ESCAPE:
 					m_running = false;
 					break;
-				/*case SDLK_UP:
+				case SDLK_UP:
 					DEBUG_MSG("Up Key Pressed");
-					SDL_SetRenderDrawColor(m_p_Renderer, 255, 0, 0, 255);
+					Camera::_position.y -= _camSpeed;
 					break;
 				case SDLK_DOWN:
 					DEBUG_MSG("Down Key Pressed");
-					SDL_SetRenderDrawColor(m_p_Renderer, 0, 255, 0, 255);
+					Camera::_position.y += _camSpeed;
 					break;
 				case SDLK_LEFT:
 					DEBUG_MSG("Left Key Pressed");
@@ -151,7 +160,7 @@ void Game::HandleEvents()
 				case SDLK_RIGHT:
 					DEBUG_MSG("Right Key Pressed");
 					SDL_SetRenderDrawColor(m_p_Renderer, 255, 255, 255, 255);
-					break;*/
+					break;
 				default:
 					break;
 				}
