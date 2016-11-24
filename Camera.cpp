@@ -1,12 +1,14 @@
 #include "Camera.h"
 
-SDL_Point Camera::_position;
+float Camera::_xPos;
+float Camera::_yPos;
 
-Camera::Camera(int pTileSize, SDL_Point pPos, int pScreenWidth)
+Camera::Camera(int pTileSize, float pX, float pY, int pScreenWidth)
 	:_tileSize(pTileSize)
 {
-	_position = pPos;
-	_tilesPerScreen = pScreenWidth / pTileSize + 1;
+	_xPos = pX;
+	_yPos = pY;
+	_tilesPerScreen = pScreenWidth / pTileSize + 2;
 }
 
 
@@ -16,16 +18,16 @@ Camera::~Camera()
 
 int Camera::findLeftTileIndex() const
 {
-	int remainder = _position.x % _tileSize;
-	int leftTilePos = _position.x - remainder;
+	int remainder = static_cast<int>(_xPos) % _tileSize;
+	int leftTilePos = _xPos - remainder;
 
 	return leftTilePos / _tileSize;
 }
 
 int Camera::findTopTileIndex() const
 {
-	int remainder = _position.y % _tileSize;
-	int topTilePos = _position.y - remainder;
+	int remainder = static_cast<int>(_yPos) % _tileSize;
+	int topTilePos = _yPos - remainder;
 
 	return topTilePos / _tileSize;
 }
@@ -33,8 +35,8 @@ int Camera::findTopTileIndex() const
 SDL_Point Camera::worldToScreen(SDL_Point pPos)
 {
 	SDL_Point scrPos;
-	scrPos.x = pPos.x - _position.x;
-	scrPos.y = pPos.y - _position.y;
+	scrPos.x = pPos.x - _xPos;
+	scrPos.y = pPos.y - _yPos;
 
 	return scrPos;
 }

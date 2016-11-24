@@ -5,14 +5,15 @@ class Camera
 {
 public:
 	Camera() {};
-	Camera(int pTileSize, SDL_Point pPos, int pScreenWidth);
+	Camera(int pTileSize, float pX, float pY, int pScreenWidth);
 	~Camera();
 	int findLeftTileIndex() const;
 	int findTopTileIndex() const;
 	static SDL_Point worldToScreen(SDL_Point pPos);
 	
 	int _tilesPerScreen;
-	static SDL_Point _position;
+	static float _xPos;
+	static float _yPos;
 	
 
 private:

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const float Game::_camSpeed = 0.1f;
+const float Game::_camSpeed = 10;
 
 Game::Game() : m_running(false)
 {
@@ -53,11 +53,7 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 	m_running = true;
 
-	SDL_Point camPos;
-	camPos.x = 0;
-	camPos.y = 0;
-
-	_cam = Camera(_TILE_SIZE, camPos, width);
+	_cam = Camera(_TILE_SIZE, 0,0, width);
 
 	return true;
 }
@@ -78,7 +74,7 @@ void Game::LoadContent()
 
 		for (int j = 0; j < _WORLD_WIDTH; j++)
 		{
-			_tiles[i].push_back(Tile(i * _TILE_SIZE * 1.05, j * _TILE_SIZE * 1.05, _TILE_SIZE, _TILE_SIZE, groundTexture));
+			_tiles[i].push_back(Tile(i * _TILE_SIZE, j * _TILE_SIZE, _TILE_SIZE, _TILE_SIZE, groundTexture));
 		}
 	}
 
@@ -112,7 +108,16 @@ void Game::Render()
 
 
 	int leftTileIndex = _cam.findLeftTileIndex();
+	if (leftTileIndex < 0)
+		leftTileIndex = 0;
+	if (leftTileIndex > _WORLD_WIDTH - _cam._tilesPerScreen - 1)
+		leftTileIndex = _WORLD_WIDTH - _cam._tilesPerScreen - 1;
+
 	int topTileIndex = _cam.findTopTileIndex();
+	if (topTileIndex < 0)
+		topTileIndex = 0;
+	if (topTileIndex > _WORLD_WIDTH - _cam._tilesPerScreen - 1)
+		topTileIndex = _WORLD_WIDTH - _cam._tilesPerScreen - 1;
 
 	for(int i = leftTileIndex; i < leftTileIndex + _cam._tilesPerScreen; i++)
 	{
@@ -146,20 +151,16 @@ void Game::HandleEvents()
 					m_running = false;
 					break;
 				case SDLK_UP:
-					DEBUG_MSG("Up Key Pressed");
-					Camera::_position.y -= _camSpeed;
+					Camera::_yPos -= _camSpeed;
 					break;
 				case SDLK_DOWN:
-					DEBUG_MSG("Down Key Pressed");
-					Camera::_position.y += _camSpeed;
+					Camera::_yPos += _camSpeed;
 					break;
 				case SDLK_LEFT:
-					DEBUG_MSG("Left Key Pressed");
-					SDL_SetRenderDrawColor(m_p_Renderer, 0, 0, 255, 255);
+					Camera::_xPos -= _camSpeed;
 					break;
 				case SDLK_RIGHT:
-					DEBUG_MSG("Right Key Pressed");
-					SDL_SetRenderDrawColor(m_p_Renderer, 255, 255, 255, 255);
+					Camera::_xPos += _camSpeed;
 					break;
 				default:
 					break;
