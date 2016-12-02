@@ -8,6 +8,7 @@
 using namespace std;
 
 const float Game::_camSpeed = 250;
+vector<vector<Tile>> Game::_tiles;
 
 Game::Game() : m_running(false)
 {
@@ -56,6 +57,12 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 	_cam = Camera(_TILE_SIZE, 0,0, width);
 
+	_followers = std::vector<Follower>();
+	for(int i = 0; i < 10; i++)
+	{
+		_followers.push_back(Follower());
+		_followers[i].SetStartingPos(Vector2i(200, 200));
+	}
 	return true;
 }
 
@@ -77,8 +84,8 @@ void Game::LoadContent()
 
 	LevelGenerator::GenerateMillion(&_tiles);
 
-	SDL_Texture* groundTexture = TextureLoader::loadTexture("assets/ground.jpg", m_p_Renderer);
-	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.jpg", m_p_Renderer);
+	SDL_Texture* groundTexture = TextureLoader::loadTexture("assets/ground.png", m_p_Renderer);
+	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
 	for(int i = 0; i < _tiles.size(); i++)
 	{
 		for(int j = 0; j < _tiles.at(i).size(); j ++)
@@ -121,6 +128,12 @@ void Game::Render()
 void Game::Update()
 {
 	//DEBUG_MSG("Updating....");
+
+	for(int i = 0; i < _followers.size(); i++)
+	{
+		_followers[i].FindPathToIndex(Vector2i(0, 0));
+	}
+
 	_frameCounter.update(m_p_Renderer);
 }
 

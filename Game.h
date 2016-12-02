@@ -7,6 +7,7 @@
 #include <vector>
 #include "FramerateCounter.h"
 #include "Camera.h"
+#include "Follower.h"
 
 class Game
 {
@@ -23,7 +24,7 @@ public:
 	void CleanUp();
 
 	static const int _WORLD_WIDTH = 1000;
-	static const int _TILE_SIZE = 64;
+	static const int _TILE_SIZE = 16;
 private:
 	bool m_running;
 	SDL_Window* m_p_Window;
@@ -36,7 +37,11 @@ private:
 
 	static const float _camSpeed;
 
-	std::vector<std::vector<Tile>> _tiles;
+	static std::vector<std::vector<Tile>> _tiles;
+	std::vector<std::vector<Node*>> _navMesh;
+
+	std::vector<Follower> _followers;
+
 	FramerateCounter _frameCounter;
 	Camera _cam;
 };
