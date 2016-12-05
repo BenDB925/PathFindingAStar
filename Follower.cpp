@@ -1,6 +1,6 @@
 #include "Follower.h"
 #include <algorithm>
-#include "Game.h"
+#include "Game.h" 
 
 
 Follower::Follower()
@@ -51,7 +51,7 @@ std::vector<Node *> Follower::FindPathToIndex(Vector2i pGoal)
 		{
 			currNode = openList[i];
 			currNode->_h = CalculateHeuristic(currNode->_posInGrid, pGoal);
-			currNode->_f = currNode->_g + currNode->_h;
+			currNode->_f = currNode->_g + (currNode->_h * _heuristicModifier);
 		}
 
 		int indexOfLowestF = -1;

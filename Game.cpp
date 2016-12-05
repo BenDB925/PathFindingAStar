@@ -57,8 +57,8 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 	_cam = Camera(_TILE_SIZE, 0,0, width);
 
-	_followers = std::vector<Follower>();
-	for(int i = 0; i < 10; i++)
+	_followers = vector<Follower>();
+	for(int i = 0; i < 500; i++)
 	{
 		_followers.push_back(Follower());
 		_followers[i].SetStartingPos(Vector2i(200, 200));
@@ -84,13 +84,14 @@ void Game::LoadContent()
 
 	LevelGenerator::GenerateMillion(&_tiles);
 
-	SDL_Texture* groundTexture = TextureLoader::loadTexture("assets/ground.png", m_p_Renderer);
-	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
+	_groundTexture = TextureLoader::loadTexture("assets/ground.png", m_p_Renderer);
+	_wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
+
 	for(int i = 0; i < _tiles.size(); i++)
 	{
 		for(int j = 0; j < _tiles.at(i).size(); j ++)
 		{
-			_tiles.at(i).at(j).initTexture(groundTexture, wallTexture);
+			_tiles.at(i).at(j).initTexture(_groundTexture, _wallTexture);
 		}
 	}
 }
@@ -98,8 +99,6 @@ void Game::LoadContent()
 void Game::Render()
 {
 	SDL_RenderClear(m_p_Renderer);
-
-
 
 	int leftTileIndex = _cam.findLeftTileIndex();
 	if (leftTileIndex < 0)
@@ -127,8 +126,6 @@ void Game::Render()
 
 void Game::Update()
 {
-	//DEBUG_MSG("Updating....");
-
 	for(int i = 0; i < _followers.size(); i++)
 	{
 		_followers[i].FindPathToIndex(Vector2i(0, 0));
@@ -176,8 +173,6 @@ bool Game::IsRunning()
 void Game::UnloadContent()
 {
 	DEBUG_MSG("Unloading Content");
-	//delete(m_p_Texture);
-	//m_p_Texture = NULL;
 }
 
 void Game::CleanUp()

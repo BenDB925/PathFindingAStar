@@ -20,4 +20,5 @@ private:
 
 	Vector2i _positionInGrid;
 	int _threadID;
+	float _heuristicModifier = 2;
 };

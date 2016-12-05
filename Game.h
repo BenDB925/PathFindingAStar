@@ -44,5 +44,7 @@ private:
 
 	FramerateCounter _frameCounter;
 	Camera _cam;
+	SDL_Texture* _groundTexture;
+	SDL_Texture* _wallTexture;
 };
 #endif

@@ -26,7 +26,7 @@ void FramerateCounter::update(SDL_Renderer * pRenderer)
 		_timeText = "";
 		_timeText = "Average Frames Per Second " + std::to_string(_countedFrames);
 
-		//std::cout << _timeText << std::endl;
+		std::cout << _timeText << std::endl;
 		_countedFrames = 0;
 		_timeInCurrSec = 0;
 	}
