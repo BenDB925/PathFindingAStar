@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include "Vector2.h"
 
 class Camera
 {
@@ -9,7 +10,7 @@ public:
 	~Camera();
 	int findLeftTileIndex() const;
 	int findTopTileIndex() const;
-	static SDL_Point worldToScreen(SDL_Point pPos);
+	static Vector2i worldToScreen(Vector2i pPos);
 	
 	int _tilesPerScreen;
 	static float _xPos;

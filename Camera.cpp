@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Vector2.h"
 
 float Camera::_xPos;
 float Camera::_yPos;
@@ -33,9 +34,9 @@ int Camera::findTopTileIndex() const
 	return topTilePos / _tileSize;
 }
 
-SDL_Point Camera::worldToScreen(SDL_Point pPos)
+Vector2i Camera::worldToScreen(Vector2i pPos)
 {
-	SDL_Point scrPos;
+	Vector2i scrPos;
 	scrPos.x = pPos.x - _xPos;
 	scrPos.y = pPos.y - _yPos;
 

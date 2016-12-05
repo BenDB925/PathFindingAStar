@@ -1,13 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
-#include "Debug.h"
 #include <SDL.h>
-#include <SDL_image.h>
 #include "Tile.h"
 #include <vector>
 #include "FramerateCounter.h"
 #include "Camera.h"
-#include "Follower.h"
+#include "Enemy.h"
 
 class Game
 {
@@ -37,14 +35,15 @@ private:
 
 	static const float _camSpeed;
 
-	static std::vector<std::vector<Tile>> _tiles;
-	std::vector<std::vector<Node*>> _navMesh;
+	static vector<vector<Tile>> _tiles;
+	vector<vector<Node*>> _navMesh;
 
-	std::vector<Follower> _followers;
+	vector<Enemy> _enemies;
 
 	FramerateCounter _frameCounter;
 	Camera _cam;
 	SDL_Texture* _groundTexture;
 	SDL_Texture* _wallTexture;
+	SDL_Texture* _enemTexture;
 };
 #endif

@@ -7,12 +7,11 @@ Follower::Follower()
 {
 }
 
-
 Follower::~Follower()
 {
 }
 
-Node * GetNodeInMap(std::map<int, Node *> * pNodeMap, Vector2i pPos)
+Node * GetNodeInMap(map<int, Node *> * pNodeMap, Vector2i pPos)
 {
 	int key = (pPos.y * Game::_WORLD_WIDTH) + pPos.x;
 
@@ -20,21 +19,20 @@ Node * GetNodeInMap(std::map<int, Node *> * pNodeMap, Vector2i pPos)
 	{
 		Node * node = new Node();
 		node->_posInGrid = pPos;
-		pNodeMap->insert(std::make_pair(key, node));
+		pNodeMap->insert(make_pair(key, node));
 	}
 
 	return pNodeMap->at(key);
-
 }
 
-std::vector<Node *> Follower::FindPathToIndex(Vector2i pGoal)
+vector<Node *> Follower::FindPathToIndex(Vector2i pGoal)
 {
-	std::map<int, Node *> nodeMap = std::map<int, Node *>();
+	map<int, Node *> nodeMap = map<int, Node *>();
 
 	//the list of nodes we still have to check out
-	std::vector<Node*> openList = std::vector<Node*>();
+	vector<Node*> openList = vector<Node*>();
 	//the list of nodes we have checked
-	std::vector<Node*> closedList = std::vector<Node*>();
+	vector<Node*> closedList = vector<Node*>();
 
 	//find variables of starting tile	
 	Node * node = GetNodeInMap(&nodeMap, _positionInGrid);
@@ -78,7 +76,7 @@ std::vector<Node *> Follower::FindPathToIndex(Vector2i pGoal)
 		openList.erase(openList.begin() + indexOfLowestF);
 		closedList.push_back(current);
 
-		std::vector<Node*> neighbours = FindNeighbours(current, &nodeMap);
+		vector<Node*> neighbours = FindNeighbours(current, &nodeMap);
 
 		for (int i = 0; i < neighbours.size(); i++)
 		{
@@ -113,7 +111,7 @@ std::vector<Node *> Follower::FindPathToIndex(Vector2i pGoal)
 
 
 	//no path found
-	return std::vector<Node*>();
+	return vector<Node*>();
 }
 
 //find closest node and set posInGrid
@@ -125,16 +123,16 @@ void Follower::SetStartingPos(Vector2i pPos)
 
 int Follower::CalculateHeuristic(Vector2i pPosInGrid, Vector2i pGoal)
 {
-	int xDiff = std::max(pPosInGrid.x - pGoal.x, pGoal.x - pPosInGrid.x);
-	int yDiff = std::max(pPosInGrid.y - pGoal.y, pGoal.y - pPosInGrid.y);
+	int xDiff = max(pPosInGrid.x - pGoal.x, pGoal.x - pPosInGrid.x);
+	int yDiff = max(pPosInGrid.y - pGoal.y, pGoal.y - pPosInGrid.y);
 
 	//manhattan distance
 	return xDiff + yDiff;
 }
 
-std::vector<Node*> Follower::FindPath(Node* pStartingNode)
+vector<Node*> Follower::FindPath(Node* pStartingNode)
 {
-	std::vector<Node*> path = std::vector<Node*>();
+	vector<Node*> path = vector<Node*>();
 
 	path.push_back(pStartingNode);
 
@@ -149,9 +147,9 @@ std::vector<Node*> Follower::FindPath(Node* pStartingNode)
 	return path;
 }
 
-std::vector<Node*> Follower::FindNeighbours(Node * pParentNode, std::map<int, Node *> * pMap)
+vector<Node*> Follower::FindNeighbours(Node * pParentNode, map<int, Node *> * pMap)
 {
-	std::vector<Node *> neighbours = std::vector<Node *>();
+	vector<Node *> neighbours = vector<Node *>();
 
 	Vector2i parentIndex = pParentNode->_posInGrid;
 	//check for walls here

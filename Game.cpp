@@ -3,6 +3,8 @@
 #include <thread>
 #include "TextureLoader.h"
 #include "LevelGenerator.h"
+#include "Enemy.h"
+#include "Debug.h"
 
 
 using namespace std;
@@ -57,15 +59,23 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 	_cam = Camera(_TILE_SIZE, 0,0, width);
 
-	_followers = vector<Follower>();
+	_enemies = vector<Enemy>();
+
+	Vector2 basePos = Vector2(_TILE_SIZE * 960, _TILE_SIZE * 100);
+	Vector2 rectSize = Vector2(_TILE_SIZE * 25, _TILE_SIZE * 500);
+	_enemTexture = TextureLoader::loadTexture("assets/slime.jpg", m_p_Renderer);
+
 	for(int i = 0; i < 500; i++)
 	{
-		_followers.push_back(Follower());
-		_followers[i].SetStartingPos(Vector2i(200, 200));
+		//Vector2 pPos, Vector2 pSize, SDL_Texture * pEnemyTexture)
+		Vector2 position = Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
+		Vector2 rectSize = Vector2(_TILE_SIZE / 2, _TILE_SIZE / 2);
+
+		_enemies.push_back(Enemy(position, rectSize, _enemTexture));
+		_enemies[i].SetStartingPos(Vector2i(50, 200));
 	}
 	return true;
 }
-
 
 
 void Game::LoadContent()
@@ -74,7 +84,7 @@ void Game::LoadContent()
 
 	for (int i = 0; i < _WORLD_WIDTH; i++)
 	{
-		_tiles.push_back(std::vector<Tile>());
+		_tiles.push_back(vector<Tile>());
 
 		for (int j = 0; j < _WORLD_WIDTH; j++)
 		{
@@ -120,15 +130,19 @@ void Game::Render()
 		}
 	}
 
+	for (int i = 0; i < _enemies.size(); i++)
+	{
+		_enemies[i].render(m_p_Renderer);
+	}
 
 	SDL_RenderPresent(m_p_Renderer);
 }
 
 void Game::Update()
 {
-	for(int i = 0; i < _followers.size(); i++)
+	for(int i = 0; i < _enemies.size(); i++)
 	{
-		_followers[i].FindPathToIndex(Vector2i(0, 0));
+		//_enemies[i].FindPathToIndex(Vector2i(0, 0));
 	}
 
 	_frameCounter.update(m_p_Renderer);

@@ -1,6 +1,6 @@
 #include "Tile.h"
 #include "TextureLoader.h"
-#include "Camera.h"
+#include "Vector2.h"
 
 
 Tile::Tile(int pX, int pY, int pWidth, int pHeight, bool pIsPassable)
@@ -13,9 +13,7 @@ Tile::Tile(int pX, int pY, int pWidth, int pHeight, bool pIsPassable)
 	_rect.w = pWidth;
 	_rect.h = pHeight;
 
-	_worldPos = SDL_Point();
-	_worldPos.x = pX;
-	_worldPos.y = pY;
+	_worldPos = Vector2i(pX, pY);
 }
 
 
@@ -30,14 +28,4 @@ void Tile::initTexture(SDL_Texture * pGroundTexture, SDL_Texture * pWallTexture)
 		_texture = pGroundTexture;
 	else
 		_texture = pWallTexture;
-}
-
-void Tile::render(SDL_Renderer * pRenderer)
-{
-	SDL_Point screenPoint = Camera::worldToScreen(_worldPos);
-
-	_rect.x = screenPoint.x;
-	_rect.y = screenPoint.y;
-
-	SDL_RenderCopy(pRenderer, _texture, NULL, &_rect);
 }
