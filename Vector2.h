@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include "Vector2i.h"
 
 class Vector2
 {
@@ -26,17 +27,23 @@ public:
 		return vector;
 	}
 
+	Vector2 operator * (const float val) const
+	{
+		return Vector2(x * val, y * val);
+	}
+
+	Vector2 operator - (const Vector2 pVec) const 
+	{
+		return Vector2(x - pVec.x, y - pVec.y);
+	}
+
+	Vector2 operator - (const Vector2i pVec) const
+	{
+		return Vector2(x - pVec.x, y - pVec.y);
+	}
+
 	float x;
 	float y;
 };
 
-class Vector2i
-{
-public:
-	Vector2i(int pX = 0, int pY = 0) : x(pX), y(pY) { }
-	~Vector2i() {}
-	bool operator<(const Vector2i& b) const { return x < b.x; }
-	int x;
-	int y;
-};
 

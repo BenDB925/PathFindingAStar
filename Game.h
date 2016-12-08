@@ -23,6 +23,7 @@ public:
 
 	static const int _WORLD_WIDTH = 1000;
 	static const int _TILE_SIZE = 16;
+	static const int _NUM_ENEMIES = 20;
 private:
 	bool m_running;
 	SDL_Window* m_p_Window;

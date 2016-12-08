@@ -1,13 +1,24 @@
-#include "Follower.h"
+#include "PathFinder.h"
 #include <algorithm>
 #include "Game.h" 
 
+PathFinder * PathFinder::_instance;
 
-Follower::Follower()
+PathFinder::PathFinder()
 {
 }
 
-Follower::~Follower()
+PathFinder * PathFinder::instance()
+{
+	if(_instance == nullptr)
+	{
+		_instance = new PathFinder();
+	}
+
+	return _instance;
+}
+
+PathFinder::~PathFinder()
 {
 }
 
@@ -25,8 +36,10 @@ Node * GetNodeInMap(map<int, Node *> * pNodeMap, Vector2i pPos)
 	return pNodeMap->at(key);
 }
 
-vector<Node *> Follower::FindPathToIndex(Vector2i pGoal)
+vector<Node *> PathFinder::FindPathToIndex(Vector2i pPos, Vector2i pGoal)
 {
+	_positionInGrid = pPos;
+
 	map<int, Node *> nodeMap = map<int, Node *>();
 
 	//the list of nodes we still have to check out
@@ -114,14 +127,7 @@ vector<Node *> Follower::FindPathToIndex(Vector2i pGoal)
 	return vector<Node*>();
 }
 
-//find closest node and set posInGrid
-void Follower::SetStartingPos(Vector2i pPos)
-{
-	_positionInGrid = pPos;
-}
-
-
-int Follower::CalculateHeuristic(Vector2i pPosInGrid, Vector2i pGoal)
+int PathFinder::CalculateHeuristic(Vector2i pPosInGrid, Vector2i pGoal)
 {
 	int xDiff = max(pPosInGrid.x - pGoal.x, pGoal.x - pPosInGrid.x);
 	int yDiff = max(pPosInGrid.y - pGoal.y, pGoal.y - pPosInGrid.y);
@@ -130,7 +136,7 @@ int Follower::CalculateHeuristic(Vector2i pPosInGrid, Vector2i pGoal)
 	return xDiff + yDiff;
 }
 
-vector<Node*> Follower::FindPath(Node* pStartingNode)
+vector<Node*> PathFinder::FindPath(Node* pStartingNode)
 {
 	vector<Node*> path = vector<Node*>();
 
@@ -147,7 +153,7 @@ vector<Node*> Follower::FindPath(Node* pStartingNode)
 	return path;
 }
 
-vector<Node*> Follower::FindNeighbours(Node * pParentNode, map<int, Node *> * pMap)
+vector<Node*> PathFinder::FindNeighbours(Node * pParentNode, map<int, Node *> * pMap)
 {
 	vector<Node *> neighbours = vector<Node *>();
 

@@ -18,6 +18,7 @@ FramerateCounter::~FramerateCounter()
 void FramerateCounter::update(SDL_Renderer * pRenderer)
 {
 	float dt = _fpsTimer.getTicks() / 1000.f;
+
 	_timeInCurrSec += dt;
 	++_countedFrames;
 

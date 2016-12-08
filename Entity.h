@@ -10,10 +10,11 @@ public:
 
 	void render(SDL_Renderer * pRenderer);
 
+	Vector2 _worldPos;
 protected:
 
+	//Vector2i _worldPos;
 	SDL_Texture* _texture;
 	SDL_Rect _rect;
-	Vector2i _worldPos;
 };
 

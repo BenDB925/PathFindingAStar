@@ -76,7 +76,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Follower.cpp" />
+    <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="FramerateCounter.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
@@ -87,7 +87,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="Follower.h" />
+    <ClInclude Include="PathFinder.h" />
     <ClInclude Include="FramerateCounter.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Debug.h" />
@@ -97,6 +97,7 @@
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Vector2i.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\sprite.png" />

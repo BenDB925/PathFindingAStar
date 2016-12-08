@@ -13,7 +13,7 @@ Tile::Tile(int pX, int pY, int pWidth, int pHeight, bool pIsPassable)
 	_rect.w = pWidth;
 	_rect.h = pHeight;
 
-	_worldPos = Vector2i(pX, pY);
+	_worldPos = Vector2(pX, pY);
 }
 
 

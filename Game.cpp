@@ -9,8 +9,12 @@
 
 using namespace std;
 
-const float Game::_camSpeed = 250;
+const float Game::_camSpeed = 3;
 vector<vector<Tile>> Game::_tiles;
+
+Uint64 NOW = SDL_GetPerformanceCounter();
+Uint64 LAST = 0;
+double deltaTime = 0;
 
 Game::Game() : m_running(false)
 {
@@ -65,14 +69,12 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 	Vector2 rectSize = Vector2(_TILE_SIZE * 25, _TILE_SIZE * 500);
 	_enemTexture = TextureLoader::loadTexture("assets/slime.jpg", m_p_Renderer);
 
-	for(int i = 0; i < 500; i++)
+	for(int i = 0; i < _NUM_ENEMIES; i++)
 	{
-		//Vector2 pPos, Vector2 pSize, SDL_Texture * pEnemyTexture)
-		Vector2 position = Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
+		Vector2 position = Vector2((float)((rand() % 1000) / 1000.0f) * 250, (float)((rand() % 1000) / 1000.0f) * 250);//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
 		Vector2 rectSize = Vector2(_TILE_SIZE / 2, _TILE_SIZE / 2);
 
 		_enemies.push_back(Enemy(position, rectSize, _enemTexture));
-		_enemies[i].SetStartingPos(Vector2i(50, 200));
 	}
 	return true;
 }
@@ -103,6 +105,11 @@ void Game::LoadContent()
 		{
 			_tiles.at(i).at(j).initTexture(_groundTexture, _wallTexture);
 		}
+	}
+
+	for (int i = 0; i < _enemies.size(); i++)
+	{
+		_enemies[i].SetPath(PathFinder::instance()->FindPathToIndex(Vector2i(50, 50), Vector2i(100, 100)));
 	}
 }
 
@@ -140,12 +147,23 @@ void Game::Render()
 
 void Game::Update()
 {
-	for(int i = 0; i < _enemies.size(); i++)
-	{
-		//_enemies[i].FindPathToIndex(Vector2i(0, 0));
-	}
+
+	LAST = NOW;
+	NOW = SDL_GetPerformanceCounter();
+
+	Uint64 temp = SDL_GetPerformanceFrequency();
+
+	deltaTime = ((double)((NOW - LAST) * 500.0) / (double)temp);
+	deltaTime /= 1.0f;
 
 	_frameCounter.update(m_p_Renderer);
+	for (int i = 0; i < _enemies.size(); i++)
+	{
+		_enemies[i].Update(deltaTime);
+	}
+
+	//Camera::_xPos = _enemies[0]._worldPos.x;
+	//Camera::_yPos = _enemies[0]._worldPos.y;
 }
 
 void Game::HandleEvents()
