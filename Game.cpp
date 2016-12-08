@@ -109,7 +109,7 @@ void Game::LoadContent()
 
 	for (int i = 0; i < _enemies.size(); i++)
 	{
-		_enemies[i].SetPath(PathFinder::instance()->FindPathToIndex(Vector2i(50, 50), Vector2i(100, 100)));
+		_enemies[i].SetPath(PathFinder::instance()->FindPathToIndex(Vector2i(50, 50), Vector2i(120, 100), &_tiles));
 	}
 }
 
