@@ -14,8 +14,8 @@ public:
 
 	vector<Node *> FindPathToIndex(Vector2i pPos, Vector2i pGoal, vector<vector<Tile>> * pTileMap);
 
-private:
 	static PathFinder * _instance;
+private:
 	PathFinder();
 	int CalculateHeuristic(Vector2i pPosInGrid, Vector2i pGoal);
 	vector<Node *> FindPath(Node* pStartingNode);

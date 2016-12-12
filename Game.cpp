@@ -6,9 +6,9 @@
 #include "Enemy.h"
 #include "Debug.h"
 
-
 using namespace std;
 
+Game * Game::_instance;
 const float Game::_camSpeed = 3;
 vector<vector<Tile>> Game::_tiles;
 
@@ -19,6 +19,8 @@ double deltaTime = 0;
 Game::Game() : m_running(false)
 {
 	_frameCounter = FramerateCounter();
+	_instance = this;
+	_threadPool = ThreadPool();
 }
 
 Game::~Game()
@@ -69,21 +71,6 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 	Vector2 rectSize = Vector2(_TILE_SIZE * 25, _TILE_SIZE * 500);
 	_enemTexture = TextureLoader::loadTexture("assets/slime.jpg", m_p_Renderer);
 
-	for(int i = 0; i < _NUM_ENEMIES; i++)
-	{
-		Vector2 position = Vector2((float)((rand() % 1000) / 1000.0f) * 250, (float)((rand() % 1000) / 1000.0f) * 250);//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
-		Vector2 rectSize = Vector2(_TILE_SIZE / 2, _TILE_SIZE / 2);
-
-		_enemies.push_back(Enemy(position, rectSize, _enemTexture));
-	}
-	return true;
-}
-
-
-void Game::LoadContent()
-{
-	DEBUG_MSG("Loading Content");
-
 	for (int i = 0; i < _WORLD_WIDTH; i++)
 	{
 		_tiles.push_back(vector<Tile>());
@@ -95,6 +82,30 @@ void Game::LoadContent()
 	}
 
 	LevelGenerator::GenerateMillion(&_tiles);
+	for(int i = 0; i < _NUM_ENEMIES; i++)
+	{
+		Vector2i position =  Vector2i(960, 10 + (i / 2));//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
+		Vector2i goal = Vector2i(10, 10);
+		Vector2 rectSize = Vector2(_TILE_SIZE / 2, _TILE_SIZE / 2);
+
+		_enemies.push_back(Enemy(position, rectSize, _enemTexture));
+
+		Job *job = new Job(position, goal, &_tiles, i);
+		PathFinder::instance();
+		_threadPool.addJob(job);
+	}
+
+	Camera::_xPos = _enemies[0]._worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2);
+	Camera::_yPos = _enemies[0]._worldPos.y - (_cam._tilesPerScreen * _TILE_SIZE / 3);
+	return true;
+}
+
+
+void Game::LoadContent()
+{
+	DEBUG_MSG("Loading Content");
+
+
 
 	_groundTexture = TextureLoader::loadTexture("assets/ground.png", m_p_Renderer);
 	_wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
@@ -107,10 +118,6 @@ void Game::LoadContent()
 		}
 	}
 
-	for (int i = 0; i < _enemies.size(); i++)
-	{
-		_enemies[i].SetPath(PathFinder::instance()->FindPathToIndex(Vector2i(50, 50), Vector2i(120, 100), &_tiles));
-	}
 }
 
 void Game::Render()
@@ -156,14 +163,17 @@ void Game::Update()
 	deltaTime = ((double)((NOW - LAST) * 500.0) / (double)temp);
 	deltaTime /= 1.0f;
 
-	_frameCounter.update(m_p_Renderer);
+	if (deltaTime > 5)
+		deltaTime = 5;
+	//_frameCounter.update(m_p_Renderer);
+
 	for (int i = 0; i < _enemies.size(); i++)
 	{
 		_enemies[i].Update(deltaTime);
 	}
 
-	//Camera::_xPos = _enemies[0]._worldPos.x;
-	//Camera::_yPos = _enemies[0]._worldPos.y;
+	//Camera::_xPos = _enemies[0]._worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2);
+	//Camera::_yPos = _enemies[0]._worldPos.y - (_cam._tilesPerScreen * _TILE_SIZE / 3);
 }
 
 void Game::HandleEvents()
@@ -213,4 +223,9 @@ void Game::CleanUp()
 	SDL_DestroyWindow(m_p_Window);
 	SDL_DestroyRenderer(m_p_Renderer);
 	SDL_Quit();
+}
+
+void Game::UpdateEnemPath(int pIndex, vector<Node*>* pPath)
+{
+	_instance->_enemies.at(pIndex).SetPath(*pPath);
 }

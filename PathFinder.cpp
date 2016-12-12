@@ -144,7 +144,7 @@ vector<Node*> PathFinder::FindPath(Node* pStartingNode)
 
 	Node * currNode = pStartingNode;
 
-	while (currNode->_parentNode != nullptr)
+	while (currNode->_parentNode != nullptr && currNode->_g > 1)
 	{
 		path.push_back(currNode->_parentNode);
 		currNode = currNode->_parentNode;
@@ -156,8 +156,11 @@ vector<Node*> PathFinder::FindPath(Node* pStartingNode)
 vector<Node*> PathFinder::FindNeighbours(Node * pParentNode, map<int, Node *> * pMap, vector<vector<Tile>> * pTileMap)
 {
 	vector<Node *> neighbours = vector<Node *>();
-
 	Vector2i parentIndex = pParentNode->_posInGrid;
+
+	if (pTileMap->at(parentIndex.x).at(parentIndex.y)._isPassable == false)
+		return neighbours;
+
 	//check for walls here
 	Node * rightNode = GetNodeInMap(pMap, Vector2i(parentIndex.x + 1, parentIndex.y));
 	Node * leftNode = GetNodeInMap(pMap, Vector2i(parentIndex.x - 1, parentIndex.y));

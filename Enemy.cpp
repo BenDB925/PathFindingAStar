@@ -1,16 +1,17 @@
 #include "Enemy.h"
 #include "Game.h"
 
-Enemy::Enemy(Vector2 pPos, Vector2 pSize, SDL_Texture * pEnemyTexture)
+Enemy::Enemy(Vector2i pGridPos, Vector2 pSize, SDL_Texture * pEnemyTexture)
 {
-	_worldPos.x = pPos.x;
-	_worldPos.y = pPos.y;
+	_worldPos.x = pGridPos.x * Game::_TILE_SIZE;
+	_worldPos.y = pGridPos.y * Game::_TILE_SIZE;
 
 	_texture = pEnemyTexture;
 	_rect.x = _worldPos.x;
 	_rect.y = _worldPos.y;
 	_rect.w = pSize.x;
 	_rect.h = pSize.y;
+	_path = new vector<Vector2>();
 }
 
 Enemy::~Enemy()

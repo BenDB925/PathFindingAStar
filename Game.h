@@ -6,6 +6,7 @@
 #include "FramerateCounter.h"
 #include "Camera.h"
 #include "Enemy.h"
+#include "ThreadPool.h"
 
 class Game
 {
@@ -21,20 +22,25 @@ public:
 	bool IsRunning();
 	void CleanUp();
 
+	void UpdateEnemPath(int pIndex, vector<Node *> * pPath);
+
 	static const int _WORLD_WIDTH = 1000;
 	static const int _TILE_SIZE = 16;
-	static const int _NUM_ENEMIES = 20;
+	static const int _NUM_ENEMIES = 500;
+
+	static Game * _instance;
+
 private:
 	bool m_running;
 	SDL_Window* m_p_Window;
 	SDL_Renderer* m_p_Renderer;
-	//SDL_Texture* m_p_Texture;
 	SDL_Rect m_Source;
 	SDL_Rect m_Destination;
 	SDL_Surface* m_p_Surface;
 
-
 	static const float _camSpeed;
+
+	ThreadPool _threadPool;
 
 	static vector<vector<Tile>> _tiles;
 	vector<vector<Node*>> _navMesh;
