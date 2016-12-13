@@ -167,11 +167,11 @@ vector<Node*> PathFinder::FindNeighbours(Node * pParentNode, map<int, Node *> * 
 	Node * upNode = GetNodeInMap(pMap, Vector2i(parentIndex.x, parentIndex.y + 1));
 	Node * downNode = GetNodeInMap(pMap, Vector2i(parentIndex.x, parentIndex.y - 1));
 
-	if (parentIndex.x + 1 <= Game::_WORLD_WIDTH && pTileMap->at(parentIndex.x + 1).at(parentIndex.y)._isPassable)
+	if (parentIndex.x + 1 < Game::_WORLD_WIDTH && pTileMap->at(parentIndex.x + 1).at(parentIndex.y)._isPassable)
 		neighbours.push_back(rightNode);
 	if (parentIndex.x - 1 >= 0 && pTileMap->at(parentIndex.x - 1).at(parentIndex.y)._isPassable)
 		neighbours.push_back(leftNode);
-	if (parentIndex.y + 1 <= Game::_WORLD_WIDTH && pTileMap->at(parentIndex.x).at(parentIndex.y + 1)._isPassable)
+	if (parentIndex.y + 1 < Game::_WORLD_WIDTH && pTileMap->at(parentIndex.x).at(parentIndex.y + 1)._isPassable)
 		neighbours.push_back(upNode);
 	if (parentIndex.y - 1 >= 0 && pTileMap->at(parentIndex.x).at(parentIndex.y - 1)._isPassable)
 		neighbours.push_back(downNode);

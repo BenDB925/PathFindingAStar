@@ -9,7 +9,7 @@
 using namespace std;
 
 Game * Game::_instance;
-const float Game::_camSpeed = 3;
+const float Game::_camSpeed = 150;
 vector<vector<Tile>> Game::_tiles;
 
 Uint64 NOW = SDL_GetPerformanceCounter();
@@ -61,6 +61,7 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 		return false;
 	}
 
+	_hasPathFound = false;
 	m_running = true;
 
 	_cam = Camera(_TILE_SIZE, 0,0, width);
@@ -81,22 +82,18 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 		}
 	}
 
-	LevelGenerator::GenerateMillion(&_tiles);
+	_waypoints = vector<Vector2i>();
+	LevelGenerator::GenerateMillion(&_tiles, &_waypoints);
 	for(int i = 0; i < _NUM_ENEMIES; i++)
 	{
 		Vector2i position =  Vector2i(960, 10 + (i / 2));//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
-		Vector2i goal = Vector2i(10, 10);
 		Vector2 rectSize = Vector2(_TILE_SIZE / 2, _TILE_SIZE / 2);
 
-		_enemies.push_back(Enemy(position, rectSize, _enemTexture));
-
-		Job *job = new Job(position, goal, &_tiles, i);
-		PathFinder::instance();
-		_threadPool.addJob(job);
+		_enemies.push_back(Enemy(position, rectSize, _enemTexture, _waypoints.size()));
 	}
 
-	Camera::_xPos = _enemies[0]._worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2);
-	Camera::_yPos = _enemies[0]._worldPos.y - (_cam._tilesPerScreen * _TILE_SIZE / 3);
+	//Camera::_xPos = _enemies[0]._worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2);
+	//Camera::_yPos = _enemies[0]._worldPos.y - (_cam._tilesPerScreen * _TILE_SIZE / 3);
 	return true;
 }
 
@@ -160,7 +157,7 @@ void Game::Update()
 
 	Uint64 temp = SDL_GetPerformanceFrequency();
 
-	deltaTime = ((double)((NOW - LAST) * 500.0) / (double)temp);
+	deltaTime = (static_cast<double>((NOW - LAST) * 500.0) / static_cast<double>(temp));
 	deltaTime /= 1.0f;
 
 	if (deltaTime > 5)
@@ -172,8 +169,8 @@ void Game::Update()
 		_enemies[i].Update(deltaTime);
 	}
 
-	//Camera::_xPos = _enemies[0]._worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2);
-	//Camera::_yPos = _enemies[0]._worldPos.y - (_cam._tilesPerScreen * _TILE_SIZE / 3);
+	Camera::_xPos = _enemies[0]._worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2);
+	Camera::_yPos = _enemies[0]._worldPos.y - (_cam._tilesPerScreen * _TILE_SIZE / 3);
 }
 
 void Game::HandleEvents()
@@ -201,6 +198,15 @@ void Game::HandleEvents()
 				case SDLK_RIGHT:
 					Camera::_xPos += _camSpeed;
 					break;
+				case SDLK_SPACE:
+					if(_hasPathFound == false)
+					{
+						for (int i = 0; i < _NUM_ENEMIES; i++)
+						{
+							AddNewWaypointForEnems(i);
+						}
+					}
+					break;
 				default:
 					break;
 				}
@@ -227,5 +233,28 @@ void Game::CleanUp()
 
 void Game::UpdateEnemPath(int pIndex, vector<Node*>* pPath)
 {
-	_instance->_enemies.at(pIndex).SetPath(*pPath);
+	_enemies.at(pIndex).SetPath(*pPath);
+	AddNewWaypointForEnems(pIndex);
+}
+
+void Game::AddNewWaypointForEnems(int pEnemyIndex)
+{
+	if(_enemies[pEnemyIndex]._indexOfWaypoint != 0)
+	{
+		_enemies[pEnemyIndex]._indexOfWaypoint--;
+		Vector2i positionInMap;
+
+		if(_enemies[pEnemyIndex]._indexOfWaypoint == _waypoints.size() - 1)
+		{
+			positionInMap = Vector2i(_enemies[pEnemyIndex]._worldPos.x / _TILE_SIZE, _enemies[pEnemyIndex]._worldPos.y / _TILE_SIZE);
+		}
+		else
+		{
+			positionInMap = _waypoints[_enemies[pEnemyIndex]._indexOfWaypoint + 1];
+		}
+
+		Job *job = new Job(positionInMap, _waypoints[_enemies[pEnemyIndex]._indexOfWaypoint], &_tiles, pEnemyIndex);
+		PathFinder::instance();
+		_threadPool.addJob(job);
+	}
 }

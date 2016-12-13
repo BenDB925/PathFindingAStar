@@ -1,8 +1,9 @@
 #include "Enemy.h"
 #include "Game.h"
 
-Enemy::Enemy(Vector2i pGridPos, Vector2 pSize, SDL_Texture * pEnemyTexture)
+Enemy::Enemy(Vector2i pGridPos, Vector2 pSize, SDL_Texture * pEnemyTexture, int pIndexOfWaypoint)
 {
+	_indexOfWaypoint = pIndexOfWaypoint;
 	_worldPos.x = pGridPos.x * Game::_TILE_SIZE;
 	_worldPos.y = pGridPos.y * Game::_TILE_SIZE;
 
@@ -40,12 +41,22 @@ vector<Vector2> * ChangeToWorldUnits(vector<Node*> * pPath)
 
 void Enemy::SetPath(vector<Node*> pPath)
 {
-	_path = ChangeToWorldUnits(&pPath);
+	vector<Vector2> * newPath = ChangeToWorldUnits(&pPath);
+	
+	if(_path->size() > 0)
+	{
+		_path->insert(_path->begin(), newPath->begin(), newPath->end());
+	}
+	else
+	{
+		_path = newPath;
+	}
 }
 
 void Enemy::FollowPath(double dt)
 {
-	Vector2 dest = _path->at(_path->size() - 1) - _worldPos;
+	Vector2 dest = _path->at(_path->size() - 1);
+	dest = dest -_worldPos;
 	float length = dest.Length();
 	while(length < 20)
 	{

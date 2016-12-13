@@ -26,12 +26,16 @@ public:
 
 	static const int _WORLD_WIDTH = 1000;
 	static const int _TILE_SIZE = 16;
-	static const int _NUM_ENEMIES = 500;
+	static const int _NUM_ENEMIES = 1;
 
 	static Game * _instance;
 
 private:
+
+	void AddNewWaypointForEnems(int pEnemyIndex);
+
 	bool m_running;
+	bool _hasPathFound;
 	SDL_Window* m_p_Window;
 	SDL_Renderer* m_p_Renderer;
 	SDL_Rect m_Source;
@@ -44,6 +48,7 @@ private:
 
 	static vector<vector<Tile>> _tiles;
 	vector<vector<Node*>> _navMesh;
+	vector<Vector2i> _waypoints;
 
 	vector<Enemy> _enemies;
 
