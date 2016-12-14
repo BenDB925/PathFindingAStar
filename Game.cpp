@@ -106,7 +106,7 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 	{
 		Vector2i position = Vector2i(_WORLD_WIDTH - 2, 0 + (i / 2));//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
 
-		_enemies.push_back(Enemy(position, rectSize, _enemTexture, _waypoints.size()));
+		_enemies.push_back(Enemy(position, rectSize, _enemTexture, _waypoints.size(), i));
 	}
 
 	_player = new Player(Vector2i(1, 1), rectSize, _enemTexture);
@@ -118,8 +118,6 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 void Game::LoadContent()
 {
 	DEBUG_MSG("Loading Content");
-
-
 
 	_groundTexture = TextureLoader::loadTexture("assets/ground.png", m_p_Renderer);
 	_wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
@@ -227,11 +225,8 @@ void Game::HandleEvents()
 					{
 						for (int i = 0; i < _NUM_ENEMIES; i++)
 						{
-							if (i == 497)
-							{
-								int debug = 0;
-							}
 							AddNewWaypointForEnems(i);
+							_enemies.at(i)._hasAskedForPath = true;
 						}
 					}
 					break;
@@ -264,21 +259,7 @@ void Game::CleanUp()
 
 void Game::UpdateEnemPath(int pIndex, vector<Node*>* pPath)
 {
-	if (pIndex == 497)
-	{
-		int debug = 0;
-	}
-
 	_enemies.at(pIndex).SetPath(*pPath); 
-
-	if (_enemies[pIndex]._indexOfWaypoint >= 0)
-	{
-		AddNewWaypointForEnems(pIndex);
-	}
-	else
-	{
-		SetPathToPlayer(pIndex);
-	}
 }
 
 void Game::AddNewWaypointForEnems(int pEnemyIndex)
@@ -311,4 +292,16 @@ void Game::SetPathToPlayer(int pEnemyIndex)
 	Job *job = new Job(positionInMap, playerPos, &_tiles, pEnemyIndex);
 	PathFinder::instance();
 	_threadPool.addJob(job);
+}
+
+void Game::AddEnemyJobToThread(int pEnemyIndex)
+{
+	if (_enemies[pEnemyIndex]._indexOfWaypoint >= 0)
+	{
+		AddNewWaypointForEnems(pEnemyIndex);
+	}
+	else
+	{
+		SetPathToPlayer(pEnemyIndex);
+	}
 }

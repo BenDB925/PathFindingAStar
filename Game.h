@@ -24,6 +24,7 @@ public:
 	void CleanUp();
 
 	void UpdateEnemPath(int pIndex, vector<Node *> * pPath);
+	void AddEnemyJobToThread(int pEnemyIndex);
 
 	static const int _WORLD_WIDTH = 1000;
 	static const int _TILE_SIZE = 16;
