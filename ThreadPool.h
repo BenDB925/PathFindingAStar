@@ -14,12 +14,13 @@ public:
 	void addJob(Job * pJob);
 	void StopJobs();
 	static ThreadedQueue *_queue;
+	bool _initted = false;
 
 private:
 	static int ThreadFunction(void * thisptr);
 	void ProcessJobs();
-	vector<SDL_Thread *> _threads;
-	bool _initted = false;
+	vector<SDL_Thread *> * _threads;
+	static bool _running;
 	int _numThreads;
 };
 

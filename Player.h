@@ -10,8 +10,6 @@ public:
 	void Update(float pDT);
 
 private:
-	float _timer;
-	const float _TIME_BEFORE_MOVE = 200;
-	const float _DIST_TO_MOVE = 1;
+	float _DIST_TO_MOVE = 0.01;
 };
 

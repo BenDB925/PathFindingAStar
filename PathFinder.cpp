@@ -122,7 +122,12 @@ vector<Node> PathFinder::FindPathToIndex(Vector2i pPos, Vector2i pGoal, vector<v
 		}
 	}
 
-
+	map<int, Node *>::iterator it = nodeMap.begin();
+	if (it != nodeMap.end())
+	{
+		delete it->second;
+		nodeMap.erase(it);
+	}
 	//no path found
 	return vector<Node>();
 }
@@ -150,7 +155,6 @@ vector<Node> PathFinder::FindPath(Node* pStartingNode, map<int, Node *> pMap)
 		currNode = currNode->_parentNode;
 	}
 
-
 	for (map< int, Node* >::iterator it = pMap.begin(); it != pMap.end(); ++it) {
 		Node* point = it->second;
 		delete point;
@@ -167,12 +171,6 @@ vector<Node*> PathFinder::FindNeighbours(Node * pParentNode, map<int, Node *> * 
 {
 	vector<Node *> neighbours = vector<Node *>();
 	Vector2i parentIndex = pParentNode->_posInGrid;
-
-	if(parentIndex.x < 0 || parentIndex.x > Game::_WORLD_WIDTH - 1 ||
-	   parentIndex.y < 0 || parentIndex.y > Game::_WORLD_WIDTH - 1)
-	{
-		return neighbours;
-	}
 
 	if (pTileMap->at(parentIndex.x).at(parentIndex.y)._isPassable == false)
 		return neighbours;

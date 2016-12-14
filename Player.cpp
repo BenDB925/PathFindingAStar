@@ -20,11 +20,8 @@ Player::~Player()
 
 void Player::Update(float pDT)
 {
-	_timer += pDT;
+	if (_worldPos.y > Game::_WORLD_WIDTH * 0.75 * Game::_TILE_SIZE || _worldPos.y < Game::_WORLD_WIDTH * 0.1 * Game::_TILE_SIZE)
+		_DIST_TO_MOVE *= -1;
 
-	if(_timer > _TIME_BEFORE_MOVE)
-	{
-		_timer = 0;
-		_worldPos.y += _DIST_TO_MOVE * pDT;
-	}
+	_worldPos.y += _DIST_TO_MOVE * pDT;
 }

@@ -26,12 +26,13 @@ public:
 	void UpdateEnemPath(int pIndex, vector<Node> * pPath);
 	void AddEnemyJobToThread(int pEnemyIndex);
 
-	static const int _WORLD_WIDTH = 30;
+	static const int _WORLD_WIDTH = 1000;
 	static const int _TILE_SIZE = 16;
 	static int _NUM_ENEMIES;
 
 	static Game * _instance;
 
+	bool _useThreads;
 
 private:
 
@@ -50,21 +51,19 @@ private:
 	SDL_Surface* m_p_Surface;
 
 	static const float _camSpeed;
-
 	ThreadPool _threadPool;
 
 	static vector<vector<Tile>> _tiles;
-	vector<vector<Node*>> _navMesh;
 	vector<Vector2i> _waypoints;
 
-	vector<Enemy *> _enemies;
+	static vector<Enemy *> _enemies;
 
 	Player * _player;
 
-	FramerateCounter _frameCounter;
 	Camera _cam;
 	SDL_Texture* _groundTexture;
 	SDL_Texture* _wallTexture;
 	SDL_Texture* _enemTexture;
+	SDL_Texture* _plTexture;
 };
 #endif

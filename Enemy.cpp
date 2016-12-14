@@ -2,6 +2,7 @@
 #include "Game.h"
 
 Enemy::Enemy(Vector2i pGridPos, Vector2 pSize, SDL_Texture * pEnemyTexture, int pIndexOfWaypoint, int pIndexInList)
+	:_sem(NULL)
 {
 	_indexOfWaypoint = pIndexOfWaypoint;
 	_worldPos.x = pGridPos.x * Game::_TILE_SIZE;
@@ -25,7 +26,9 @@ Enemy::~Enemy()
 
 void Enemy::Update(double dt)
 {
-	SDL_SemWait(_sem);
+	if(Game::_instance->_useThreads)
+		SDL_SemWait(_sem);
+
 	if(_path.size() > 0)
 	{
 		_hasAskedForPath = false;
@@ -55,11 +58,9 @@ void Enemy::Update(double dt)
 		Game::_instance->AddEnemyJobToThread(_indexInEnemyList);
 		_hasAskedForPath = true;
 	}
-	else if(_indexOfWaypoint == 0 && _path.size() == 0)
-	{
-		_isFinished = true;
-	}
-	SDL_SemPost(_sem);
+
+	if (Game::_instance->_useThreads)
+		SDL_SemPost(_sem);
 }
 
 vector<Vector2> ChangeToWorldUnits(vector<Node> * pPath)
@@ -76,7 +77,10 @@ vector<Vector2> ChangeToWorldUnits(vector<Node> * pPath)
 void Enemy::SetPath(vector<Node> pPath)
 {
 	vector<Vector2> newPath = ChangeToWorldUnits(&pPath);
-	SDL_SemWait(_sem);
+
+	if (Game::_instance->_useThreads)
+		SDL_SemWait(_sem);
+
 	if(_path.size() > 0)
 	{
 		_path.insert(_path.begin(), newPath.begin(), newPath.end());
@@ -86,7 +90,8 @@ void Enemy::SetPath(vector<Node> pPath)
 		_path = newPath;
 	}
 
-	SDL_SemPost(_sem);
+	if (Game::_instance->_useThreads)
+		SDL_SemPost(_sem);
 }
 
 void Enemy::FollowPath(double dt, Vector2 pDest)

@@ -18,7 +18,6 @@ public:
 
 	int _indexOfWaypoint = -1;
 	bool _hasAskedForPath;
-	bool _isFinished = false;
 
 private:
 

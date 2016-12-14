@@ -3,12 +3,14 @@
 
 
 Entity::Entity()
+	:_texture(NULL)
 {
 }
 
 
 Entity::~Entity()
 {
+
 }
 
 void Entity::render(SDL_Renderer * pRenderer)

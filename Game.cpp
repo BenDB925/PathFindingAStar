@@ -11,6 +11,7 @@ using namespace std;
 Game * Game::_instance;
 const float Game::_camSpeed = 150;
 vector<vector<Tile>> Game::_tiles;
+vector<Enemy *> Game::_enemies;
 int Game::_NUM_ENEMIES;
 
 Uint64 NOW = SDL_GetPerformanceCounter();
@@ -19,9 +20,10 @@ double deltaTime = 0;
 
 Game::Game() : m_running(false)
 {
-	_frameCounter = FramerateCounter();
 	_instance = this;
-	_threadPool = ThreadPool();
+	_instance->_threadPool = ThreadPool();
+	_useThreads = false;
+	_enemies = vector<Enemy *>();
 }
 
 Game::~Game()
@@ -134,13 +136,15 @@ void Game::Update()
 
 	if (deltaTime > 5)
 		deltaTime = 5;
-	//_frameCounter.update(m_p_Renderer);
 
 	int count = 0;
 	for (int i = 0; i < _enemies.size(); i++)
 	{
 		_enemies[i]->Update(deltaTime);
-		if (_enemies[i]->_isFinished)
+
+		float dist = (_enemies[i]->_worldPos - _player->_worldPos).Length();
+
+		if (dist < 250)
 			count++;
 	}
 
@@ -188,13 +192,16 @@ void Game::HandleEvents()
 					{
 						for (int i = 0; i < _NUM_ENEMIES; i++)
 						{
-							AddNewWaypointForEnems(i);
+							AddEnemyJobToThread(i);
 							_enemies.at(i)->_hasAskedForPath = true;
 						}
 					}
 					break;
 				case SDLK_f:
 					_followCam = !_followCam;
+					break;
+				case SDLK_t:
+					_useThreads = !_useThreads;
 					break;
 				default:
 					break;
@@ -229,20 +236,20 @@ void Game::UpdateEnemPath(int pIndex, vector<Node>* pPath)
 void Game::AddNewWaypointForEnems(int pEnemyIndex)
 {
 	_enemies[pEnemyIndex]->_indexOfWaypoint--;
-	Vector2i positionInMap;
+	Vector2i positionInMap = Vector2i(_enemies[pEnemyIndex]->_worldPos.x / _TILE_SIZE, _enemies[pEnemyIndex]->_worldPos.y / _TILE_SIZE);
 
-	if (_enemies[pEnemyIndex]->_indexOfWaypoint == _waypoints.size() - 1)
+	if (_useThreads)
 	{
-		positionInMap = Vector2i(_enemies[pEnemyIndex]->_worldPos.x / _TILE_SIZE, _enemies[pEnemyIndex]->_worldPos.y / _TILE_SIZE);
+		Job *job = new Job(positionInMap, _waypoints[_enemies[pEnemyIndex]->_indexOfWaypoint], &_tiles, pEnemyIndex);
+		PathFinder::instance();
+		_threadPool.addJob(job);
 	}
 	else
 	{
-		positionInMap = _waypoints[_enemies[pEnemyIndex]->_indexOfWaypoint + 1];
+		PathFinder::instance();
+		vector<Node> path = PathFinder::_instance->FindPathToIndex(positionInMap, _waypoints[_enemies[pEnemyIndex]->_indexOfWaypoint], &_tiles);;
+		Game::_instance->UpdateEnemPath(pEnemyIndex, &path);
 	}
-
-	Job *job = new Job(positionInMap, _waypoints[_enemies[pEnemyIndex]->_indexOfWaypoint], &_tiles, pEnemyIndex);
-	PathFinder::instance();
-	_threadPool.addJob(job);
 }
 
 void Game::SetPathToPlayer(int pEnemyIndex)
@@ -252,27 +259,39 @@ void Game::SetPathToPlayer(int pEnemyIndex)
 	positionInMap = Vector2i(_enemies[pEnemyIndex]->_worldPos.x / _TILE_SIZE, _enemies[pEnemyIndex]->_worldPos.y / _TILE_SIZE);
 	Vector2i playerPos = Vector2i(_player->_worldPos.x / _TILE_SIZE, _player->_worldPos.y / _TILE_SIZE);;
 
-	Job *job = new Job(positionInMap, playerPos, &_tiles, pEnemyIndex);
-	PathFinder::instance();
-	_threadPool.addJob(job);
+	if (_useThreads)
+	{
+		Job *job = new Job(positionInMap, playerPos, &_tiles, pEnemyIndex);
+		PathFinder::instance();
+		_threadPool.addJob(job);
+	}
+	else
+	{
+		vector<Node> path = PathFinder::_instance->FindPathToIndex(positionInMap, playerPos, &_tiles);
+		Game::_instance->UpdateEnemPath(pEnemyIndex, &path);
+	}
 }
 
 void Game::Reset()
 {
-	while(_threadPool._queue->_jobQueue.size() > 0)
+	if (_enemTexture == nullptr)
 	{
-		
+		_enemTexture = TextureLoader::loadTexture("assets/slime.jpg", m_p_Renderer);
+		_plTexture = TextureLoader::loadTexture("assets/slime_pl.jpg", m_p_Renderer);
 	}
+
+	if(_instance->_threadPool._initted)
+		_instance->_threadPool.StopJobs();
+
+	_instance->_threadPool = ThreadPool();
 
 	_hasPathFound = false;
 	m_running = true;
 
 	_cam = Camera(_TILE_SIZE, 0, 0, _windowWidth);
 
-	_enemies = vector<Enemy *>();
 
 	Vector2 basePos = Vector2(_TILE_SIZE * 960, _TILE_SIZE * 100);
-	_enemTexture = TextureLoader::loadTexture("assets/slime.jpg", m_p_Renderer);
 
 	_tiles = vector<vector<Tile>>();
 	for (int i = 0; i < _WORLD_WIDTH; i++)
@@ -303,15 +322,29 @@ void Game::Reset()
 		LevelGenerator::GenerateWalls(&_tiles, &_waypoints, 19, 50);
 	}
 
+
+	while (_enemies.size() != 0)
+	{
+		Enemy * enem = _enemies.at(0);
+		_enemies.erase(_enemies.begin());
+		delete enem;
+	}
+
+	_enemies = vector<Enemy *>();
 	Vector2 rectSize = Vector2(_TILE_SIZE / 2, _TILE_SIZE / 2);
 	for (int i = 0; i < _NUM_ENEMIES; i++)
 	{
-		Vector2i position = Vector2i(_WORLD_WIDTH - 2, 0 + (i / 2));//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
+		Vector2i position = Vector2i(_WORLD_WIDTH - 2, 1 + (i / 2));//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
 
 		_enemies.push_back(new Enemy(position, rectSize, _enemTexture, _waypoints.size(), i));
 	}
 
-	_player = new Player(Vector2i(1, 1), rectSize, _enemTexture);
+
+	if (_player == nullptr)
+	{
+		Vector2i randPos = Vector2i(rand() % 10, (rand() % (int)(_WORLD_WIDTH * 0.3) + _WORLD_WIDTH * 0.3));
+		_player = new Player(randPos, rectSize, _plTexture);
+	}
 
 	LoadContent();
 }

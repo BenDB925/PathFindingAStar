@@ -44,12 +44,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Libraries\SDL2-2.0.4\include;C:\Libraries\SDL2_image-2.0.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\SDL2-2.0.5\include;C:\Libraries\SDL2_image-2.0.1\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Libraries\SDL2-2.0.4\lib\x86;C:\Libraries\SDL2_image-2.0.1\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Libraries\SDL2-2.0.5\lib\x86;C:\Libraries\SDL2_image-2.0.1\lib\x86;</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <Profile>true</Profile>
@@ -62,14 +62,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Libraries\SDL2-2.0.4\include;C:\Libraries\SDL2_image-2.0.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\SDL2-2.0.5\include;C:\Libraries\SDL2_image-2.0.1\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Libraries\SDL2-2.0.4\lib\x86;C:\Libraries\SDL2_image-2.0.1\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Libraries\SDL2-2.0.5\lib\x86;C:\Libraries\SDL2_image-2.0.1\lib\x86;</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <Profile>true</Profile>
     </Link>

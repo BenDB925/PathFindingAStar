@@ -11,6 +11,15 @@ ThreadedQueue::ThreadedQueue()
 
 ThreadedQueue::~ThreadedQueue()
 {
+	SDL_DestroyMutex(_lock);
+	SDL_DestroyCond(_available);
+
+	while(_jobQueue.size() != 0)
+	{
+		Job * job = _jobQueue.front();
+		_jobQueue.pop();
+	}
+	_jobQueue.swap(queue<Job*>());
 }
 
 void ThreadedQueue::pushJob(Job * pJob)
