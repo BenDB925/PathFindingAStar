@@ -22,5 +22,5 @@ private:
 	vector<Node *> FindNeighbours(Node * pParentNode, map<int, Node *> * pMap, vector<vector<Tile>> * pTileMap);
 
 	Vector2i _positionInGrid;
-	float _heuristicModifier = 2;
+	float _heuristicModifier = 1.5;
 };

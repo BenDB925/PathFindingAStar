@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Enemy.h"
 #include "ThreadPool.h"
+#include "Player.h"
 
 class Game
 {
@@ -26,16 +27,19 @@ public:
 
 	static const int _WORLD_WIDTH = 1000;
 	static const int _TILE_SIZE = 16;
-	static const int _NUM_ENEMIES = 1;
+	static int _NUM_ENEMIES;
 
 	static Game * _instance;
+
 
 private:
 
 	void AddNewWaypointForEnems(int pEnemyIndex);
+	void SetPathToPlayer(int pEnemyIndex);
 
 	bool m_running;
 	bool _hasPathFound;
+	bool _followCam;
 	SDL_Window* m_p_Window;
 	SDL_Renderer* m_p_Renderer;
 	SDL_Rect m_Source;
@@ -51,6 +55,8 @@ private:
 	vector<Vector2i> _waypoints;
 
 	vector<Enemy> _enemies;
+
+	Player * _player;
 
 	FramerateCounter _frameCounter;
 	Camera _cam;

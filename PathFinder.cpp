@@ -111,7 +111,7 @@ vector<Node *> PathFinder::FindPathToIndex(Vector2i pPos, Vector2i pGoal, vector
  					for (int j = 0; j < neighbours.size(); j++)
 					{
 						comparerNode = neighbours.at(j);
-						if (comparerNode->_g < currNeighbour->_g)
+						if (comparerNode->_g < currNeighbour->_g && comparerNode->_parentNode != currNeighbour)
 						{
 							currNeighbour->_g = comparerNode->_g;
 							currNeighbour->_parentNode = comparerNode;
@@ -144,19 +144,28 @@ vector<Node*> PathFinder::FindPath(Node* pStartingNode)
 
 	Node * currNode = pStartingNode;
 
-	while (currNode->_parentNode != nullptr && currNode->_g > 1)
+	while (currNode->_parentNode != nullptr && path.size() < 3000)
 	{
 		path.push_back(currNode->_parentNode);
 		currNode = currNode->_parentNode;
 	}
 
-	return path;
+	if (path.size() > 1)
+		return path;
+	else
+		return vector<Node *>();
 }
 
 vector<Node*> PathFinder::FindNeighbours(Node * pParentNode, map<int, Node *> * pMap, vector<vector<Tile>> * pTileMap)
 {
 	vector<Node *> neighbours = vector<Node *>();
 	Vector2i parentIndex = pParentNode->_posInGrid;
+
+	if(parentIndex.x < 0 || parentIndex.x > Game::_WORLD_WIDTH - 1 ||
+	   parentIndex.y < 0 || parentIndex.y > Game::_WORLD_WIDTH - 1)
+	{
+		return neighbours;
+	}
 
 	if (pTileMap->at(parentIndex.x).at(parentIndex.y)._isPassable == false)
 		return neighbours;

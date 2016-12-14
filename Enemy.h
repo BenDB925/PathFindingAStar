@@ -20,7 +20,8 @@ public:
 
 private:
 
-	void FollowPath(double dt);
-	const float _SPEED = 4.0f;
+	void FollowPath(double dt, Vector2 pDest);
+	const float _SPEED = 5; // 5 is sensible number, 50 works but looks awful
+	SDL_semaphore* _sem;
 };
 
