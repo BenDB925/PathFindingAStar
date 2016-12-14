@@ -23,10 +23,10 @@ public:
 	bool IsRunning();
 	void CleanUp();
 
-	void UpdateEnemPath(int pIndex, vector<Node *> * pPath);
+	void UpdateEnemPath(int pIndex, vector<Node> * pPath);
 	void AddEnemyJobToThread(int pEnemyIndex);
 
-	static const int _WORLD_WIDTH = 1000;
+	static const int _WORLD_WIDTH = 30;
 	static const int _TILE_SIZE = 16;
 	static int _NUM_ENEMIES;
 
@@ -37,7 +37,9 @@ private:
 
 	void AddNewWaypointForEnems(int pEnemyIndex);
 	void SetPathToPlayer(int pEnemyIndex);
+	void Reset();
 
+	int _windowWidth;
 	bool m_running;
 	bool _hasPathFound;
 	bool _followCam;
@@ -55,7 +57,7 @@ private:
 	vector<vector<Node*>> _navMesh;
 	vector<Vector2i> _waypoints;
 
-	vector<Enemy> _enemies;
+	vector<Enemy *> _enemies;
 
 	Player * _player;
 

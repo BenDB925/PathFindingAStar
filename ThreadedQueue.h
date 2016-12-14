@@ -11,9 +11,9 @@ public:
 
 	void pushJob(Job * pJob);
 	Job * popJob();
+	queue<Job*> _jobQueue;
 
 private:
-	queue<Job*> _jobQueue;
 	SDL_mutex* _lock;
 	SDL_cond* _available;
 };

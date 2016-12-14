@@ -12,12 +12,13 @@ public:
 
 	void Update(double dt);
 
-	void SetPath(vector<Node *> pPath);
+	void SetPath(vector<Node> pPath);
 
 	vector<Vector2> _path;
 
 	int _indexOfWaypoint = -1;
 	bool _hasAskedForPath;
+	bool _isFinished = false;
 
 private:
 

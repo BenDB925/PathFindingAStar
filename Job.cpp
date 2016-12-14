@@ -17,8 +17,6 @@ Job::~Job()
 
 void Job::execute() const
 {
-	if (_index == 497)
-		int debug = 0;
-	vector<Node* > path = PathFinder::_instance->FindPathToIndex(_start, _end, _tileMap);
+	vector<Node> path = PathFinder::_instance->FindPathToIndex(_start, _end, _tileMap);
 	Game::_instance->UpdateEnemPath(_index, &path);
 }

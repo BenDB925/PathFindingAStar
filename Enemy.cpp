@@ -55,25 +55,26 @@ void Enemy::Update(double dt)
 		Game::_instance->AddEnemyJobToThread(_indexInEnemyList);
 		_hasAskedForPath = true;
 	}
+	else if(_indexOfWaypoint == 0 && _path.size() == 0)
+	{
+		_isFinished = true;
+	}
 	SDL_SemPost(_sem);
 }
 
-vector<Vector2> ChangeToWorldUnits(vector<Node*> * pPath)
+vector<Vector2> ChangeToWorldUnits(vector<Node> * pPath)
 {
 	vector<Vector2> pathInWorldUnits = vector<Vector2>();
 
 	for (int i = 0; i < pPath->size(); i++)
 	{
-		pathInWorldUnits.push_back(Vector2(pPath->at(i)->_posInGrid.x * Game::_TILE_SIZE, pPath->at(i)->_posInGrid.y * Game::_TILE_SIZE));
+		pathInWorldUnits.push_back(Vector2(pPath->at(i)._posInGrid.x * Game::_TILE_SIZE, pPath->at(i)._posInGrid.y * Game::_TILE_SIZE));
 	}
 	return pathInWorldUnits;
 } 
 
-void Enemy::SetPath(vector<Node*> pPath)
+void Enemy::SetPath(vector<Node> pPath)
 {
-	if (_indexOfWaypoint <= 0)
-		int debug = 0;
-
 	vector<Vector2> newPath = ChangeToWorldUnits(&pPath);
 	SDL_SemWait(_sem);
 	if(_path.size() > 0)

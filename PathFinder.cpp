@@ -36,7 +36,7 @@ Node * GetNodeInMap(map<int, Node *> * pNodeMap, Vector2i pPos)
 	return pNodeMap->at(key);
 }
 
-vector<Node *> PathFinder::FindPathToIndex(Vector2i pPos, Vector2i pGoal, vector<vector<Tile>> * pTileMap)
+vector<Node> PathFinder::FindPathToIndex(Vector2i pPos, Vector2i pGoal, vector<vector<Tile>> * pTileMap)
 {
 	_positionInGrid = pPos;
 
@@ -82,7 +82,7 @@ vector<Node *> PathFinder::FindPathToIndex(Vector2i pPos, Vector2i pGoal, vector
 		//if the goal
 		if (current == GetNodeInMap(&nodeMap, pGoal))
 		{
-			return FindPath(current);
+			return FindPath(current, nodeMap);
 		}
 
 		//remove current
@@ -124,7 +124,7 @@ vector<Node *> PathFinder::FindPathToIndex(Vector2i pPos, Vector2i pGoal, vector
 
 
 	//no path found
-	return vector<Node*>();
+	return vector<Node>();
 }
 
 int PathFinder::CalculateHeuristic(Vector2i pPosInGrid, Vector2i pGoal)
@@ -136,24 +136,31 @@ int PathFinder::CalculateHeuristic(Vector2i pPosInGrid, Vector2i pGoal)
 	return xDiff + yDiff;
 }
 
-vector<Node*> PathFinder::FindPath(Node* pStartingNode)
+vector<Node> PathFinder::FindPath(Node* pStartingNode, map<int, Node *> pMap)
 {
-	vector<Node*> path = vector<Node*>();
+	vector<Node> path = vector<Node>();
 
-	path.push_back(pStartingNode);
+	path.push_back(*pStartingNode);
 
 	Node * currNode = pStartingNode;
 
 	while (currNode->_parentNode != nullptr && path.size() < 3000)
 	{
-		path.push_back(currNode->_parentNode);
+		path.push_back(*currNode->_parentNode);
 		currNode = currNode->_parentNode;
 	}
+
+
+	for (map< int, Node* >::iterator it = pMap.begin(); it != pMap.end(); ++it) {
+		Node* point = it->second;
+		delete point;
+	}
+	pMap.clear();
 
 	if (path.size() > 1)
 		return path;
 	else
-		return vector<Node *>();
+		return vector<Node>();
 }
 
 vector<Node*> PathFinder::FindNeighbours(Node * pParentNode, map<int, Node *> * pMap, vector<vector<Tile>> * pTileMap)
