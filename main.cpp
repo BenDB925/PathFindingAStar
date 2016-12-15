@@ -6,6 +6,9 @@
 #include <string>
 #include "Debug.h"
 
+#pragma comment(lib,"SDL2.lib") 
+#pragma comment(lib, "SDL2_image.lib")
+
 using namespace std;
 
 class Process
