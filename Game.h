@@ -3,7 +3,6 @@
 #include <SDL.h>
 #include "Tile.h"
 #include <vector>
-#include "FramerateCounter.h"
 #include "Camera.h"
 #include "Enemy.h"
 #include "ThreadPool.h"
@@ -59,6 +58,7 @@ private:
 	static vector<Enemy *> _enemies;
 
 	Player * _player;
+	SDL_semaphore* _playerSem;
 
 	Camera _cam;
 	SDL_Texture* _groundTexture;

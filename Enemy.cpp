@@ -36,7 +36,7 @@ void Enemy::Update(double dt)
 		dest = dest - _worldPos;
 		float length = dest.Length();
 
-		while (abs(length) < 16)
+		while (abs(length) < 36)
 		{
 			if (_path.size() == 1)
 			{

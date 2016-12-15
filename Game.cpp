@@ -22,8 +22,9 @@ Game::Game() : m_running(false)
 {
 	_instance = this;
 	_instance->_threadPool = ThreadPool();
-	_useThreads = false;
+	_useThreads = true;
 	_enemies = vector<Enemy *>();
+	_playerSem = SDL_CreateSemaphore(1);
 }
 
 Game::~Game()
@@ -155,7 +156,7 @@ void Game::Update()
 
 	if (_followCam == true)
 	{
-		Camera::_xPos = _enemies[0]->_worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2); //497 fucked
+		Camera::_xPos = _enemies[0]->_worldPos.x - (_cam._tilesPerScreen * _TILE_SIZE / 2);
 		Camera::_yPos = _enemies[0]->_worldPos.y - (_cam._tilesPerScreen * _TILE_SIZE / 3);
 	}
 
@@ -257,7 +258,8 @@ void Game::SetPathToPlayer(int pEnemyIndex)
 	Vector2i positionInMap;
 
 	positionInMap = Vector2i(_enemies[pEnemyIndex]->_worldPos.x / _TILE_SIZE, _enemies[pEnemyIndex]->_worldPos.y / _TILE_SIZE);
-	Vector2i playerPos = Vector2i(_player->_worldPos.x / _TILE_SIZE, _player->_worldPos.y / _TILE_SIZE);;
+
+	Vector2i playerPos = Vector2i(_player->_worldPos.x / _TILE_SIZE, _player->_worldPos.y / _TILE_SIZE);
 
 	if (_useThreads)
 	{
@@ -334,7 +336,7 @@ void Game::Reset()
 	Vector2 rectSize = Vector2(_TILE_SIZE / 2, _TILE_SIZE / 2);
 	for (int i = 0; i < _NUM_ENEMIES; i++)
 	{
-		Vector2i position = Vector2i(_WORLD_WIDTH - 2, 1 + (i / 2));//Vector2(((float)(rand() % 1000) / 1000) * rectSize.x + basePos.x, ((float)(rand() % 1000) / 1000) * rectSize.y + basePos.y);
+		Vector2i position = Vector2i(_WORLD_WIDTH - 2, 1 + (i / 2));
 
 		_enemies.push_back(new Enemy(position, rectSize, _enemTexture, _waypoints.size(), i));
 	}
